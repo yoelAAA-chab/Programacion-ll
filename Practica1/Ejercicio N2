@@ -1,0 +1,55 @@
+public class ecuacioncuadratica {
+    private double a;
+    private double b;
+    private double c;
+
+    public ecuacioncuadratica(double a,double b,double c){
+        this.a=a;
+        this.b=b;
+        this.c=c;
+    }
+
+    public double getdiscriminante(){
+        return b*b - 4*a*c;
+    }
+
+    public double getraiz1(){
+        double d=getdiscriminante();
+        if(d<0) return 0;
+        return (-b + Math.sqrt(d))/(2*a);
+    }
+
+    public double getraiz2(){
+        double d=getdiscriminante();
+        if(d<0) return 0;
+        return (-b - Math.sqrt(d))/(2*a);
+    }
+}
+
+
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args){
+        Scanner tec=new Scanner(System.in);
+
+        System.out.print("ingrese a: ");
+        double a=tec.nextDouble();
+        System.out.print("ingrese b: ");
+        double b=tec.nextDouble();
+        System.out.print("ingrese c: ");
+        double c=tec.nextDouble();
+
+        ecuacioncuadratica eq=new ecuacioncuadratica(a,b,c);
+
+        double d=eq.getdiscriminante();
+
+        if(d>0){
+            System.out.println("la ecuacion tiene dos raices "+eq.getraiz1()+" y "+eq.getraiz2());
+        }else if(d==0){
+            System.out.println("la ecuacion tiene una raiz "+eq.getraiz1());
+        }else{
+            System.out.println("la ecuacion no tiene raices reales");
+        }
+    }
+}

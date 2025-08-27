@@ -1,0 +1,46 @@
+public class estadistica {
+    private double[] datos;
+    private int n;
+
+    public estadistica(double[] datos){
+        this.datos=datos;
+        this.n=datos.length;
+    }
+
+    public double promedio(){
+        double suma=0;
+        for(int i=0;i<n;i++){
+            suma+=datos[i];
+        }
+        return suma/n;
+    }
+
+    public double desviacion(){
+        double media=promedio();
+        double suma=0;
+        for(int i=0;i<n;i++){
+            suma+=Math.pow(datos[i]-media,2);
+        }
+        return Math.sqrt(suma/(n-1));
+    }
+}
+
+
+import java.util.Scanner;
+public class Main {
+   public static void main(String[] args){
+      Scanner tec=new Scanner(System.in);
+      double[] nums=new double[10];
+
+      System.out.println("ingrese 10 numeros:");
+      for(int i=0;i<10;i++){
+         nums[i]=tec.nextDouble();
+      }
+
+      estadistica est=new estadistica(nums);
+
+      System.out.println("el promedio es "+est.promedio());
+      System.out.println("la desviacion estandar es "+est.desviacion());
+
+   }
+}

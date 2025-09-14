@@ -1,0 +1,94 @@
+public class algebra_vectorial { 
+   
+
+ double x; 
+    double y; 
+    double z; 
+    static final double EPS = 1e-6; 
+ 
+    public algebra_vectorial() { this(0,0,0); } 
+    public algebra_vectorial(double x, double y, double z) { 
+        this.x=x; 
+        this.y=y; 
+        this.z=z; } 
+ 
+    public double modulo() { 
+        return Math.sqrt(x*x + y*y + z*z); 
+    } 
+ 
+    public algebra_vectorial suma(algebra_vectorial v) { 
+        return new algebra_vectorial(x + v.x, y + v.y, z + v.z); 
+    } 
+ 
+    public algebra_vectorial resta(algebra_vectorial v) { 
+        return new algebra_vectorial(x - v.x, y - v.y, z - v.z); 
+    } 
+ 
+    public algebra_vectorial escalar(double r) { 
+        return new algebra_vectorial(r*x, r*y, r*z); 
+    } 
+ 
+    public algebra_vectorial normalizar() { 
+        double m = modulo(); 
+        if (m < EPS) 
+            return new algebra_vectorial(0,0,0); 
+        return new algebra_vectorial(x/m, y/m, z/m); 
+    } 
+ 
+    public double producto_punto(algebra_vectorial v) { 
+        return x*v.x + y*v.y + z*v.z; 
+    } 
+ 
+    public algebra_vectorial producto_cruz(algebra_vectorial v) { 
+        double cx = y*v.z - z*v.y; 
+        double cy = z*v.x - x*v.z; 
+        double cz = x*v.y - y*v.x; 
+        return new algebra_vectorial(cx, cy, cz); 
+    } 
+ 
+    public boolean perpendicular(algebra_vectorial v) { 
+        return Math.abs(producto_punto(v)) < EPS; 
+    } 
+ 
+    public boolean paralelo(algebra_vectorial v) { 
+        return producto_cruz(v).modulo() < EPS; 
+    } 
+ 
+    public algebra_vectorial proyeccion(algebra_vectorial b) { 
+        double n = b.modulo(); 
+        if (n < EPS) return new algebra_vectorial(0,0,0); 
+        double k = producto_punto(b) / (n*n); 
+        return new algebra_vectorial(b.x*k, b.y*k, b.z*k); 
+    } 
+ 
+    public double componente(algebra_vectorial b) { 
+        double n = b.modulo(); 
+        if (n < EPS) return 0.0; 
+        return producto_punto(b) / n; 
+    } 
+ 
+    public String toString() { return "(" + x + ", " + y + ", " + z + ")"; } 
+} 
+ 
+
+ 
+
+ 
+
+public class Main { 
+    public static void main(String[] args) { 
+        algebra_vectorial a = new algebra_vectorial(3, 0, 0); 
+        algebra_vectorial b = new algebra_vectorial(6, 0, 0); 
+        algebra_vectorial c = new algebra_vectorial(0, 2, 0); 
+ 
+        System.out.println("a: " + a); 
+        System.out.println("b: " + b); 
+        System.out.println("c: " + c); 
+ 
+        System.out.println("perpendicular (a,c): " + a.perpendicular(c)); 
+        System.out.println("paralelo (a,b): " + a.paralelo(b)); 
+        System.out.println("proyeccion de a sobre c: " + a.proyeccion(c)); 
+        System.out.println("componente de a en c: " + a.componente(c)); 
+        System.out.println("normalizar a: " + a.normalizar()); 
+    } 
+}

@@ -1,0 +1,76 @@
+public class algebravectorial { 
+    private double x, y, z; 
+    private static final double EPS = 1e-6; 
+ 
+    public algebravectorial() { this(0,0,0); } 
+    public algebravectorial(double x, double y, double z) { 
+        this.x=x; 
+        this.y=y; 
+        this.z=z; 
+    } 
+ 
+    public double modulo() { 
+        return Math.sqrt(x*x + y*y + z*z); 
+    } 
+ 
+    public algebravectorial suma(algebravectorial v) { 
+        return new algebravectorial(x+v.x, y+v.y, z+v.z); 
+    } 
+ 
+    public algebravectorial resta(algebravectorial v) { 
+        return new algebravectorial(x - v.x, y - v.y, z - v.z); 
+    } 
+ 
+    public double productoPunto(algebravectorial v) { 
+        return x*v.x + y*v.y + z*v.z; 
+    } 
+ 
+    public algebravectorial productoCruz(algebravectorial v) { 
+        double cx = y*v.z - z*v.y; 
+        double cy = z*v.x - x*v.z; 
+        double cz = x*v.y - y*v.x; 
+        return new algebravectorial(cx, cy, cz); 
+    } 
+ 
+    public boolean perpendicular(algebravectorial v) { 
+        return Math.abs(productoPunto(v)) < EPS; 
+    } 
+ 
+    public boolean paralelo(algebravectorial v) { 
+        return productoCruz(v).modulo() < EPS; 
+    } 
+ 
+    public algebravectorial proyeccion(algebravectorial b) { 
+        double n = b.modulo(); 
+ 
+ 
+        if (n < EPS)  
+           return new algebravectorial(0,0,0); 
+        double k = productoPunto(b) / (n*n); 
+        return new algebravectorial(b.x*k, b.y*k, b.z*k); 
+    } 
+ 
+    public double componente(algebravectorial b) { 
+        double n = b.modulo(); 
+        if (n < EPS) return 0.0; 
+        return productoPunto(b) / n; 
+    } 
+ 
+    public String toString() { return "(" + x + ", " + y + ", " + z + ")"; } 
+} 
+
+
+
+public class Main { 
+    public static void main(String[] args) { 
+        algebravectorial a = new algebravectorial(1, 0, 0); 
+        algebravectorial b = new algebravectorial(0, 1, 0); 
+ 
+        System.out.println("a: " + a); 
+        System.out.println("b: " + b); 
+        System.out.println("perpendicular: " + a.perpendicular(b)); 
+        System.out.println("paralelo: " + a.paralelo(b)); 
+        System.out.println("proyeccion de a sobre b: " + a.proyeccion(b)); 
+        System.out.println("componente de a en b: " + a.componente(b)); 
+    } 
+}

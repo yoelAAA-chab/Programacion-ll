@@ -1,0 +1,109 @@
+public class Juego { 
+ 
+    //a) 
+    protected int numeroDeVidas; 
+    protected int record; 
+    private int vidasIniciales; 
+ 
+    public Juego(int numeroDeVidas) { 
+        this.numeroDeVidas = numeroDeVidas; 
+        this.vidasIniciales = numeroDeVidas; 
+        this.record = 0; 
+    } 
+ 
+    //b) 
+    public void reiniciaPartida() { 
+        numeroDeVidas = vidasIniciales; 
+    } 
+ 
+    //c) 
+    public void actualizaRecord() { 
+        if (numeroDeVidas > record) { 
+            record = numeroDeVidas; 
+        } 
+    } 
+ 
+    //d) 
+    public boolean quitaVida() { 
+        numeroDeVidas--; 
+        return numeroDeVidas > 0; 
+    } 
+} 
+ 
+
+
+
+import java.util.Random; 
+import java.util.Scanner; 
+ 
+//a) 
+public class JuegoAdivinaNumero extends Juego { 
+ 
+    //b) 
+    private int numeroAAdivinar; 
+ 
+    //c) 
+    public JuegoAdivinaNumero(int numeroDeVidas) { 
+        super(numeroDeVidas); 
+    } 
+ 
+    //d) 
+    public void juega() { 
+        //d1 
+        reiniciaPartida(); 
+ 
+ 
+        //d2 
+        numeroAAdivinar = new Random().nextInt(11); 
+ 
+ 
+        //d3 
+        System.out.println("Adivina un numero entre 0 y 10"); 
+ 
+ 
+        //d4 
+        Scanner sc = new Scanner(System.in); 
+        while (true) { 
+            int intento = sc.nextInt(); 
+ 
+            if (intento == numeroAAdivinar) { 
+                System.out.println("asertaste!!!"); 
+                actualizaRecord(); 
+                break; 
+            } 
+ 
+ 
+ 
+ 
+            boolean quedanVidas = quitaVida(); 
+ 
+ 
+ 
+ 
+            if (!quedanVidas) { 
+                System.out.println("tines 0 vidas perdiste"); 
+                break; 
+            } 
+ 
+ 
+ 
+            if (intento < numeroAAdivinar) { 
+                System.out.println("mayor"); 
+            } else { 
+                System.out.println("menor"); 
+            } 
+            System.out.println("intenta de nuevo"); 
+        } 
+    } 
+} 
+ 
+
+ 
+
+public class Aplicacion { 
+    public static void main(String[] args) { 
+        JuegoAdivinaNumero j1 = new JuegoAdivinaNumero(3); 
+        j1.juega(); 
+    } 
+} 
+ 

@@ -1,0 +1,114 @@
+public interface Coloreado {
+    String comoColorear();
+}
+
+
+public abstract class Figura {
+    protected String color;
+
+    public Figura(String color) {
+        this.color = color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public abstract double area();
+    public abstract double perimetro();
+
+    public String toString() {
+        return "color: " + color;
+    }
+}
+
+
+public class Circulo extends Figura {
+    private double radio;
+
+    public Circulo(String color, double radio) {
+        super(color);
+        this.radio = radio;
+    }
+
+    public double area() {
+        return Math.PI * radio * radio;
+    }
+
+    public double perimetro() {
+        return 2 * Math.PI * radio;
+    }
+
+    public String toString() {
+        return "circulo | " + super.toString() + " |radio: " + radio;
+    }
+}
+
+
+public class Cuadrado extends Figura implements Coloreado {
+    private double lado;
+
+    public Cuadrado(String color, double lado) {
+        super(color);
+        this.lado = lado;
+    }
+
+    public double area() {
+        return lado * lado;
+    }
+
+    public double perimetro() {
+        return 4 * lado;
+    }
+
+    public String comoColorear() {
+        return "colorear los cuatro lados";
+    }
+
+    public String toString() {
+        return "cuadrado | " + super.toString() + " |lado: " + lado;
+    }
+}
+
+
+import java.util.Random;
+public class Main {
+    public static void main(String[] args) {
+        Random rnd = new Random();
+        String[] colores = {"rojo","blanco","negro","azul","plomo"};
+
+        Figura[] figuras = new Figura[5];
+
+        for (int i = 0; i < figuras.length; i++) {
+            int tipo = 1 + rnd.nextInt(2); 
+            String color = colores[rnd.nextInt(colores.length)];
+
+            if (tipo == 1) {
+                double lado = 1 + rnd.nextInt(10); 
+                figuras[i] = new Cuadrado(color, lado);
+            } else {
+                double radio = 1 + rnd.nextInt(10); 
+                figuras[i] = new Circulo(color, radio);
+            }
+        }
+
+
+        System.out.println("figuras:");
+        for (Figura f : figuras) {
+            System.out.println(f.toString());
+            System.out.println("area: " + f.area());
+            System.out.println("permetro: " + f.perimetro());
+
+
+            if (f instanceof Coloreado) {
+                Coloreado c = (Coloreado) f;
+                System.out.println("colorear: " + c.comoColorear());
+            }
+            System.out.println("...........");
+        }
+    }
+}

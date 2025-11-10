@@ -1,0 +1,278 @@
+import java.util.ArrayList;
+
+public class Biblioteca {
+    private String nombre;
+    private Horario horario;
+    private ArrayList<Libro> librosDisponibles;
+    private ArrayList<Autor> autoresRegistrados;
+    private ArrayList<Prestamo> prestamosActivos;
+
+    public Biblioteca(String nombre) {
+        this.nombre = nombre;
+
+        this.horario = new Horario("Lunes a Viernes", "08:00", "18:00");
+
+        this.librosDisponibles = new ArrayList<Libro>();
+        this.autoresRegistrados = new ArrayList<Autor>();
+        this.prestamosActivos = new ArrayList<Prestamo>();
+    }
+
+    public void agregarLibro(Libro libro) {
+        this.librosDisponibles.add(libro);
+        System.out.println("Libro '" + libro.getTitulo() + "' agregado a la biblioteca.");
+    }
+
+    public void agregarAutor(Autor autor) {
+        this.autoresRegistrados.add(autor);
+        System.out.println("Autor '" + autor.getNombre() + "' registrado en la biblioteca.");
+    }
+
+    public void prestarLibro(Estudiante estudiante, Libro libro) {
+        if (this.librosDisponibles.contains(libro)) {
+            Prestamo nuevoPrestamo = new Prestamo(estudiante, libro);
+            this.prestamosActivos.add(nuevoPrestamo);
+            this.librosDisponibles.remove(libro);
+            System.out.println("\nPrestamo realizado con exito:");
+            nuevoPrestamo.mostrarInfo();
+        } else {
+            System.out.println("El libro '" + libro.getTitulo() + "' no esta disponible.");
+        }
+    }
+
+    public void mostrarEstado() {
+        System.out.println("\n===== ESTADO DE LA BIBLIOTECA: " + this.nombre + " =====");
+        this.horario.mostrarHorario();
+
+        System.out.println("\nLibros Disponibles (" + this.librosDisponibles.size() + "):");
+        if (this.librosDisponibles.isEmpty()) {
+            System.out.println("  (Ninguno)");
+        }
+        for (Libro l : this.librosDisponibles) {
+            System.out.println("  - " + l.getTitulo());
+        }
+
+        System.out.println("\nAutores Registrados (" + this.autoresRegistrados.size() + "):");
+        if (this.autoresRegistrados.isEmpty()) {
+            System.out.println("  (Ninguno)");
+        }
+        for (Autor a : this.autoresRegistrados) {
+            System.out.println("  - " + a.getNombre());
+        }
+
+        System.out.println("\nPrestamos Activos (" + this.prestamosActivos.size() + "):");
+        if (this.prestamosActivos.isEmpty()) {
+            System.out.println("  (Ninguno)");
+        }
+        for (Prestamo p : this.prestamosActivos) {
+            p.mostrarInfo();
+        }
+        System.out.println("-----------------------");
+    }
+
+    public void cerrarBiblioteca() {
+        System.out.println("\n!!! CERRANDO LA BIBLIOTECA: " + this.nombre + " !!!");
+        System.out.println("Todos los prestamos activos dejan de existir.");
+        this.prestamosActivos.clear();
+    }
+}
+
+
+import java.util.ArrayList;
+
+public class Libro {
+    private String titulo;
+    private String ISBN;
+    private ArrayList<Pagina> paginas;
+
+    public Libro(String titulo, String ISBN, ArrayList<String> contenidoPaginas) {
+        this.titulo = titulo;
+        this.ISBN = ISBN;
+
+        this.paginas = new ArrayList<Pagina>();
+        int i = 1;
+        for (String contenido : contenidoPaginas) {
+            this.paginas.add(new Pagina(i, contenido));
+            i++;
+        }
+    }
+
+    public void leer() {
+        System.out.println("\nLeyendo el libro: '" + this.titulo + "' (ISBN: " + this.ISBN + ")");
+        for (Pagina p : this.paginas) {
+            p.mostrarInfo();
+        }
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getISBN() {
+        return ISBN;
+    }
+}
+
+
+
+
+public class Prestamo {
+    private String fechaPrestamo;
+    private String fechaDevolucion;
+    private Estudiante estudiante;
+    private Libro libro;
+
+    public Prestamo(Estudiante estudiante, Libro libro) {
+        this.estudiante = estudiante;
+        this.libro = libro;
+
+
+        this.fechaPrestamo = "09 de Noviembre 2025";
+        this.fechaDevolucion = "23 de Noviembre 2025";
+    }
+
+    public void mostrarInfo() {
+        System.out.println("mostarando info:");
+        System.out.println("  Estudiante: " + this.estudiante.getNombre());
+        System.out.println("  Libro: " + this.libro.getTitulo());
+        System.out.println("  Fecha de Prestamo: " + this.fechaPrestamo);
+        System.out.println("  Fecha de Devolucion: " + this.fechaDevolucion);
+    }
+}
+
+public class Pagina {
+    private int numeroPagina;
+    private String contenido;
+
+    public Pagina(int numero, String contenido) {
+        this.numeroPagina = numero;
+        this.contenido = contenido;
+    }
+
+    public void mostrarInfo() {
+        System.out.println("--- Pagina " + this.numeroPagina + " ---");
+        System.out.println(this.contenido);
+        System.out.println("--------------------");
+    }
+
+    public String getContenido() {
+        return contenido;
+    }
+}
+
+
+public class Horario {
+    private String diasApertura;
+    private String horaApertura;
+    private String horaCierre;
+
+    public Horario(String dias, String apertura, String cierre) {
+        this.diasApertura = dias;
+        this.horaApertura = apertura;
+        this.horaCierre = cierre;
+    }
+
+    public void mostrarHorario() {
+        System.out.println("Horario de Atencion:");
+        System.out.println("  Dias: " + this.diasApertura);
+        System.out.println("  Apertura: " + this.horaApertura);
+        System.out.println("  Cierre: " + this.horaCierre);
+    }
+}
+
+
+
+
+public class Autor {
+    private String nombre;
+    private String nacionalidad;
+
+    public Autor(String nombre, String nacionalidad) {
+        this.nombre = nombre;
+        this.nacionalidad = nacionalidad;
+    }
+
+    public void mostrarInfo() {
+        System.out.println("Autor: " + this.nombre + " (" + this.nacionalidad + ")");
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+}
+
+
+public class Estudiante {
+    private String codigoEstudiante;
+    private String nombre;
+
+    public Estudiante(String codigo, String nombre) {
+        this.codigoEstudiante = codigo;
+        this.nombre = nombre;
+    }
+
+    public void mostrarInfo() {
+        System.out.println("Estudiante: " + this.nombre + " (Cod: " + this.codigoEstudiante + ")");
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+}
+
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class Main {
+    public static void main(String[] args) {
+
+        //System.out.println("");
+
+        Autor autor1 = new Autor("Agner Asistiri", "Boliviano");
+        Autor autor2 = new Autor("Yoel americo", "Italiano");
+        autor1.mostrarInfo();
+
+        ArrayList<String> paginasLibro1 = new ArrayList<String>(
+                Arrays.asList("hola.....", "murio xd ")
+        );
+        Libro libro1 = new Libro("dark souls", "978-0307350449", paginasLibro1);
+
+        ArrayList<String> paginasLibro2 = new ArrayList<String>(
+                Arrays.asList("el caballerito.....", " y camino y se enfrento")
+        );
+        Libro libro2 = new Libro("red dead ", "978-0618640157", paginasLibro2);
+
+        libro1.leer();
+
+        Estudiante est1 = new Estudiante("123-ABC", "Yoel americo");
+        est1.mostrarInfo();
+
+        //System.out.println("");
+
+        Biblioteca bibliotecaCentral = new Biblioteca("Biblioteca Central UMSA");
+
+        bibliotecaCentral.agregarLibro(libro1);
+        bibliotecaCentral.agregarLibro(libro2);
+        bibliotecaCentral.agregarAutor(autor1);
+        bibliotecaCentral.agregarAutor(autor2);
+
+        bibliotecaCentral.mostrarEstado();
+
+        System.out.println("\n---------prestamo");
+
+        bibliotecaCentral.prestarLibro(est1, libro1);
+
+        bibliotecaCentral.mostrarEstado();
+
+        System.out.println("\n cerra bibioteca");
+
+        bibliotecaCentral.cerrarBiblioteca();
+
+        System.out.println("\n-------agregacion");
+        autor1.mostrarInfo();
+        libro1.leer();
+
+        System.out.println("\compocion:");
+        bibliotecaCentral.mostrarEstado();
+    }
+}

@@ -1,0 +1,177 @@
+public class MiTeleferico {
+    private Linea[] lineas;
+    private float cantidadIngresos;
+
+
+    public MiTeleferico(float cantidadIngresos){
+        this.cantidadIngresos = cantidadIngresos;
+
+        lineas = new Linea[3];
+        contadorLineas = 0;
+
+
+        lineas[contadorLineas++] = new Linea("rojo");
+        lineas[contadorLineas++] = new Linea("amarilo");
+        lineas[contadorLineas++] = new Linea("verde");
+    }
+    int contadorLineas=0;
+    public void agregaPersonaFila(Persona p, String colorLinea){
+        for(int i = 0; i < contadorLineas; i++){
+            if(lineas[i].getColor().equalsIgnoreCase(colorLinea)){
+                lineas[i].agregarpersona(p);
+                return;
+            }
+        }
+        System.out.println("lleno");
+    }
+
+    public void verificarReglas() {
+        boolean Bien = true;
+
+      
+        for(int i = 0; i < contadorLineas; i++){
+            Linea linea = lineas[i];
+            Persona[] fila = linea.getFila();
+            int cantidad = linea.getCantidadPersonas();
+
+            for(int j = 0; j < cantidad; j++){
+                Persona p = fila[j];
+
+                
+                if(p.getPesoPersona() > 850){
+                    System.out.println("erro " + p.getNombre() + " pesa " + p.getPesoPersona() + " kg en la línea " + linea.getColor() + " (máximo permitido: 10 kg)");
+                    Bien = false;
+                }
+            }
+        }
+        if(true){
+            System.out.println("todo cumple");
+        }
+    }
+
+
+}
+
+
+public class Linea {
+    private String color;
+    private Persona[] filaPersonas;
+    private Cabina[] cabinas;
+
+    int cantidadCabinas=0;
+    int contadorPersona=0;
+    public Linea(String color){
+        this.color = color;
+
+
+        filaPersonas = new Persona[10];
+        contadorPersona = 0;
+
+
+        cabinas = new Cabina[12];
+        cantidadCabinas = 0;
+
+        cabinas[cantidadCabinas++] = new Cabina(1);
+        cabinas[cantidadCabinas++] = new Cabina(2);
+    }
+
+    public String getColor(){
+        return color;
+    }
+
+    public void agregarpersona(Persona p){
+        if (contadorPersona < filaPersonas.length){
+            filaPersonas[contadorPersona] = p;
+            contadorPersona++;
+        } else {
+            System.out.println("lleno");
+        }
+    }
+
+    public void verificar(){
+        for(int i=0;i<cantidadCabinas;i++){
+            for(int j=0;j<contadorPersona;j++){
+
+            }
+        }
+    }
+
+    public Persona[] getFila(){
+        return filaPersonas;
+    }
+    public int getCantidadPersonas(){
+        return contadorPersona;
+    }
+
+
+
+}
+public class Persona {
+    private String nombre;
+    private int edad;
+    private float pesoPersona;
+
+    public Persona(String nombre, int edad, float pesoPersona){
+        this.nombre = nombre;
+        this.edad = edad;
+        this.pesoPersona = pesoPersona;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+    public float getPesoPersona(){
+        return pesoPersona;
+    }
+
+}
+
+
+public class Cabina {
+    private int nroCabina;
+    private Persona[] personasAbordo;
+
+    int contadorPersona=0;
+    public Cabina(int nroCabina){
+        this.nroCabina = nroCabina;
+        personasAbordo = new Persona[10];
+    }
+
+    public void agregarPersona(Persona p){
+        if(contadorPersona < personasAbordo.length){
+            personasAbordo[contadorPersona] = p;
+            contadorPersona++;
+        } else {
+            System.out.println("llena");
+        }
+    }
+    int xxxx=0;
+    public Persona getvecperonas(){
+        return personasAbordo[xxxx++];
+    }
+}
+public class Main {
+    public static void main(String[] args){
+        MiTeleferico miTeleferico = new MiTeleferico(1000f);
+
+        Persona p1=new Persona("agner", 19, 19);
+        Persona p2=new Persona("asistiri", 30, 21);
+        Persona p3=new Persona("americo", 40, 22);
+        Persona p4=new Persona("agner", 19, 19);
+        Persona p5=new Persona("asistiri", 30, 21);
+        Persona p6=new Persona("americo", 40, 22);
+
+
+        miTeleferico.agregaPersonaFila(p1, "rojo");
+        miTeleferico.agregaPersonaFila(p2, "amarillo");
+        miTeleferico.agregaPersonaFila(p3, "rojo");
+
+        miTeleferico.verificarReglas();
+
+
+
+
+    }
+}
+
+

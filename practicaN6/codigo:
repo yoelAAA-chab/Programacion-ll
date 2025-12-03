@@ -1,0 +1,1067 @@
+package biblioteca;
+
+public class Autor {
+    private String nombre;
+    private String nacionalidad;
+
+    public Autor() {
+        // Constructor vacío para Gson
+    }
+
+    public Autor(String nombre, String nacionalidad) {
+        this.nombre = nombre;
+        this.nacionalidad = nacionalidad;
+    }
+
+    public void mostrarInfo() {
+        System.out.println("Autor: " + nombre + " - Nacionalidad: " + nacionalidad);
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getNacionalidad() {
+        return nacionalidad;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setNacionalidad(String nacionalidad) {
+        this.nacionalidad = nacionalidad;
+    }
+
+    @Override
+    public String toString() {
+        return nombre + " (" + nacionalidad + ")";
+    }
+}
+
+
+package biblioteca;
+
+import java.util.ArrayList;
+
+public class Biblioteca {
+    private String nombre;
+    private ArrayList<Libro> libros;
+    private ArrayList<Autor> autores;
+    private ArrayList<Prestamo> prestamos; 
+    private ArrayList<Prestamo> historialPrestamos; 
+    private Horario horario;
+
+    public Biblioteca() {
+        this.libros = new ArrayList<>();
+        this.autores = new ArrayList<>();
+        this.prestamos = new ArrayList<>();
+        this.historialPrestamos = new ArrayList<>();
+    }
+    
+    public Biblioteca(String nombre, String diasApertura, String horaApertura, String horaCierre) {
+        this.nombre = nombre;
+        this.libros = new ArrayList<>();
+        this.autores = new ArrayList<>();
+        this.prestamos = new ArrayList<>();
+        this.historialPrestamos = new ArrayList<>();
+        this.horario = new Horario(diasApertura, horaApertura, horaCierre);
+    }
+    
+    // ========== MÉTODOS PARA LIBROS ==========
+    
+    public void agregarLibro(Libro libro) {
+        libros.add(libro);
+    }
+    
+    public void editarLibro(int index, Libro libroEditado) {
+        if (index >= 0 && index < libros.size()) {
+            libros.set(index, libroEditado);
+        }
+    }
+    
+    public void eliminarLibro(int index) {
+        if (index >= 0 && index < libros.size()) {
+            if (!estaLibroPrestado(libros.get(index))) {
+                libros.remove(index);
+            }
+        }
+    }
+    
+    public boolean estaLibroDisponible(Libro libro) {
+        for (Prestamo prestamo : prestamos) {
+            if (prestamo.getLibro().equals(libro) && !prestamo.isDevuelto()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public boolean estaLibroPrestado(Libro libro) {
+        return !estaLibroDisponible(libro);
+    }
+    
+    public ArrayList<Libro> getLibrosDisponibles() {
+        ArrayList<Libro> disponibles = new ArrayList<>();
+        for (Libro libro : libros) {
+            if (estaLibroDisponible(libro)) {
+                disponibles.add(libro);
+            }
+        }
+        return disponibles;
+    }
+    
+    public ArrayList<Libro> getLibrosPrestados() {
+        ArrayList<Libro> prestados = new ArrayList<>();
+        for (Libro libro : libros) {
+            if (estaLibroPrestado(libro)) {
+                prestados.add(libro);
+            }
+        }
+        return prestados;
+    }
+    
+    public ArrayList<Libro> buscarLibrosPorTitulo(String busqueda) {
+        ArrayList<Libro> resultados = new ArrayList<>();
+        String busquedaLower = busqueda.toLowerCase();
+        for (Libro libro : libros) {
+            if (libro.getTitulo().toLowerCase().contains(busquedaLower)) {
+                resultados.add(libro);
+            }
+        }
+        return resultados;
+    }
+    
+    // ========== MÉTODOS PARA AUTORES ==========
+    
+    public void agregarAutor(Autor autor) {
+        autores.add(autor);
+    }
+    
+    public void editarAutor(int index, Autor autorEditado) {
+        if (index >= 0 && index < autores.size()) {
+            autores.set(index, autorEditado);
+        }
+    }
+    
+    public void eliminarAutor(int index) {
+        if (index >= 0 && index < autores.size()) {
+            autores.remove(index);
+        }
+    }
+    
+    // ========== MÉTODOS PARA PRÉSTAMOS ==========
+    
+    public void prestarLibro(Estudiante estudiante, Libro libro, String fechaPrestamo, String fechaDevolucion) {
+        if (estaLibroDisponible(libro)) {
+            Prestamo prestamo = new Prestamo(estudiante, libro, fechaPrestamo, fechaDevolucion);
+            prestamos.add(prestamo);
+            historialPrestamos.add(prestamo);
+        }
+    }
+    
+    public void devolverLibro(Prestamo prestamo) {
+        prestamo.marcarDevuelto();
+    }
+    
+    public ArrayList<Prestamo> getPrestamosActivos() {
+        ArrayList<Prestamo> activos = new ArrayList<>();
+        for (Prestamo prestamo : prestamos) {
+            if (!prestamo.isDevuelto()) {
+                activos.add(prestamo);
+            }
+        }
+        return activos;
+    }
+    
+    public ArrayList<Prestamo> getHistorialPrestamos() {
+        return new ArrayList<>(historialPrestamos);
+    }
+    
+    // ========== GETTERS Y SETTERS ==========
+    
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    
+    public ArrayList<Libro> getLibros() { return libros; }
+    public void setLibros(ArrayList<Libro> libros) { this.libros = libros; }
+    
+    public ArrayList<Autor> getAutores() { return autores; }
+    public void setAutores(ArrayList<Autor> autores) { this.autores = autores; }
+    
+    public ArrayList<Prestamo> getPrestamos() { return prestamos; }
+    public void setPrestamos(ArrayList<Prestamo> prestamos) { this.prestamos = prestamos; }
+    
+    public ArrayList<Prestamo> getHistorialPrestamosList() { return historialPrestamos; }
+    public void setHistorialPrestamos(ArrayList<Prestamo> historialPrestamos) { this.historialPrestamos = historialPrestamos; }
+    
+    public Horario getHorario() { return horario; }
+    public void setHorario(Horario horario) { this.horario = horario; }
+    
+    @Override
+    public String toString() {
+        return "Biblioteca: " + nombre + " (" + horario + ")";
+    }
+}
+
+
+package biblioteca;
+
+public class Estudiante {
+    private String codigo;
+    private String nombre;
+
+    public Estudiante() {
+        // Constructor vacío para Gson
+    }
+
+    public Estudiante(String codigo, String nombre) {
+        this.codigo = codigo;
+        this.nombre = nombre;
+    }
+
+    public void mostrarInfo() {
+        System.out.println("Estudiante: " + nombre + " - Código: " + codigo);
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    @Override
+    public String toString() {
+        return nombre + " (" + codigo + ")";
+    }
+}
+
+
+
+
+
+package biblioteca;
+
+public class Horario {
+    private String diasApertura;
+    private String horaApertura;
+    private String horaCierre;
+
+    public Horario() {
+        // Constructor vacío para Gson
+    }
+
+    public Horario(String diasApertura, String horaApertura, String horaCierre) {
+        this.diasApertura = diasApertura;
+        this.horaApertura = horaApertura;
+        this.horaCierre = horaCierre;
+    }
+
+    public void mostrarHorario() {
+        System.out.println("Horario de atencion: " + diasApertura + " de " +
+                horaApertura + " a " + horaCierre);
+    }
+
+    public String getDiasApertura() {
+        return diasApertura;
+    }
+
+    public String getHoraApertura() {
+        return horaApertura;
+    }
+
+    public String getHoraCierre() {
+        return horaCierre;
+    }
+
+    public void setDiasApertura(String diasApertura) {
+        this.diasApertura = diasApertura;
+    }
+
+    public void setHoraApertura(String horaApertura) {
+        this.horaApertura = horaApertura;
+    }
+
+    public void setHoraCierre(String horaCierre) {
+        this.horaCierre = horaCierre;
+    }
+
+    @Override
+    public String toString() {
+        return diasApertura + " " + horaApertura + "-" + horaCierre;
+    }
+}
+
+
+
+
+
+package biblioteca;
+
+import java.util.ArrayList;
+
+public class Libro {
+    private String titulo;
+    private String isbn;
+    private ArrayList<Pagina> paginas;
+
+    public Libro() {
+        this.paginas = new ArrayList<>();
+    }
+
+    public Libro(String titulo, String isbn, String[] contenidosPaginas) {
+        this.titulo = titulo;
+        this.isbn = isbn;
+        this.paginas = new ArrayList<>();
+        if (contenidosPaginas != null) {
+            for (int i = 0; i < contenidosPaginas.length; i++) {
+                paginas.add(new Pagina(i + 1, contenidosPaginas[i]));
+            }
+        }
+        System.out.println(" Libro '" + titulo + "' creado con " + paginas.size() + " paginas");
+    }
+
+    public void leer() {
+        System.out.println("\n=== Leyendo libro: " + titulo + " ===");
+        for (Pagina pagina : paginas) {
+            pagina.mostrarContenido();
+        }
+    }
+
+    public void mostrarInfo() {
+        System.out.println("Libro: " + titulo + " (ISBN: " + isbn + ") - " + paginas.size() + " paginas");
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public ArrayList<Pagina> getPaginas() {
+        return paginas;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public void setPaginas(ArrayList<Pagina> paginas) {
+        this.paginas = paginas;
+    }
+
+    public void agregarPagina(Pagina pagina) {
+        paginas.add(pagina);
+    }
+
+    @Override
+    public String toString() {
+        return titulo + " (" + isbn + ")";
+    }
+}
+
+
+
+
+
+package biblioteca;
+
+public class Pagina {
+    private int numero;
+    private String contenido;
+
+    public Pagina() {
+        // Constructor vacío para Gson
+    }
+
+    public Pagina(int numero, String contenido) {
+        this.numero = numero;
+        this.contenido = contenido;
+    }
+
+    public void mostrarContenido() {
+        System.out.println("Pagina " + numero + ": " + contenido);
+    }
+
+    public int getNumero() {
+        return numero;
+    }
+
+    public String getContenido() {
+        return contenido;
+    }
+
+    public void setNumero(int numero) {
+        this.numero = numero;
+    }
+
+    public void setContenido(String contenido) {
+        this.contenido = contenido;
+    }
+
+    @Override
+    public String toString() {
+        String resumen = contenido == null ? "" : contenido;
+        return "Pág. " + numero + ": " + resumen.substring(0, Math.min(20, resumen.length())) + "...";
+    }
+}
+
+
+
+
+
+package biblioteca;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+public class Prestamo {
+    private String fechaPrestamo;
+    private String fechaDevolucion;
+    private Estudiante estudiante;
+    private Libro libro;
+    private boolean devuelto;
+    
+    public Prestamo() {
+        this.devuelto = false;
+    }
+    
+    public Prestamo(Estudiante estudiante, Libro libro, String fechaPrestamo, String fechaDevolucion) {
+        this.estudiante = estudiante;
+        this.libro = libro;
+        this.fechaPrestamo = fechaPrestamo;
+        this.fechaDevolucion = fechaDevolucion;
+        this.devuelto = false;
+        System.out.println(" Prestamo creado: " + estudiante.getNombre() + " - " + libro.getTitulo());
+    }
+    
+    public void marcarDevuelto() {
+        this.devuelto = true;
+        this.fechaDevolucion = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+    
+    public boolean isDevuelto() {
+        return devuelto;
+    }
+    
+    public void setDevuelto(boolean devuelto) {
+        this.devuelto = devuelto;
+    }
+    
+    public String getFechaPrestamo() { return fechaPrestamo; }
+    public String getFechaDevolucion() { return fechaDevolucion; }
+    public Estudiante getEstudiante() { return estudiante; }
+    public Libro getLibro() { return libro; }
+    
+    public void setFechaPrestamo(String fechaPrestamo) { this.fechaPrestamo = fechaPrestamo; }
+    public void setFechaDevolucion(String fechaDevolucion) { this.fechaDevolucion = fechaDevolucion; }
+    public void setEstudiante(Estudiante estudiante) { this.estudiante = estudiante; }
+    public void setLibro(Libro libro) { this.libro = libro; }
+    
+    public void mostrarInfo() {
+        System.out.println("=== Informacion del Prestamo ===");
+        System.out.println("Libro: " + libro.getTitulo());
+        System.out.println("Estudiante: " + estudiante.getNombre());
+        System.out.println("Fecha prestamo: " + fechaPrestamo);
+        System.out.println("Fecha devolucion: " + fechaDevolucion);
+        System.out.println("Estado: " + (devuelto ? "DEVUELTO" : "PRESTADO"));
+    }
+    
+    @Override
+    public String toString() {
+        String estado = devuelto ? "DEVUELTO" : "PRESTADO";
+        return estudiante.getNombre() + " - " + libro.getTitulo() + 
+               " (" + fechaPrestamo + " a " + fechaDevolucion + ") - " + estado;
+    }
+}
+
+
+
+
+package biblioteca;
+
+import javax.swing.SwingUtilities;
+
+public class MainBiblioteca {
+    public static void main(String[] args) {
+        // Lanzar la interfaz en el hilo de Swing
+        SwingUtilities.invokeLater(() -> {
+            BibliotecaFrame frame = new BibliotecaFrame();
+            frame.setVisible(true);
+        });
+    }
+}
+
+
+
+
+package biblioteca;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.util.ArrayList;
+
+public class BibliotecaFrame extends JFrame {
+    
+    // Componentes principales
+    private JTabbedPane tabbedPane;
+    
+    // Paneles
+    private JPanel panelInicio;
+    private JPanel panelLibros;
+    private JPanel panelAutores;
+    private JPanel panelPrestamos;
+    private JPanel panelInfo;
+    private JPanel panelBusqueda;
+    
+    // Tablas
+    private JTable tablaLibros;
+    private JTable tablaAutores;
+    private JTable tablaPrestamos;
+    private JTable tablaHistorial;
+    private JTable tablaBusqueda;
+    
+    // Modelos de tablas
+    private DefaultTableModel modeloTablaLibros;
+    private DefaultTableModel modeloTablaAutores;
+    private DefaultTableModel modeloTablaPrestamos;
+    private DefaultTableModel modeloHistorial;
+    private DefaultTableModel modeloBusqueda;
+    
+    // Botones
+    private JButton btnAgregarLibro, btnEditarLibro, btnEliminarLibro, btnVerLibro, btnExportarLibro;
+    private JButton btnAgregarAutor, btnEditarAutor, btnEliminarAutor, btnExportarAutor;
+    private JButton btnNuevoPrestamo, btnDevolverLibro, btnExportarPrestamos, btnVerHistorial;
+    private JButton btnActualizarInfo;
+    private JButton btnBuscarLibros, btnFiltrarDisponibles, btnFiltrarPrestados, btnMostrarTodos;
+    
+    // Campos de búsqueda
+    private JTextField txtBusqueda;
+    
+    // Texto
+    private JTextArea textAreaInfo;
+    
+    // Menú
+    private JMenuBar menuBar;
+    private JMenu menuArchivo, menuHerramientas, menuAyuda;
+    private JMenuItem menuItemGuardar, menuItemCargar, menuItemSalir;
+    private JMenuItem menuItemBackup, menuItemEstadisticas, menuItemReporte;
+    private JMenuItem menuItemAcercaDe;
+    
+    // Datos
+    private Biblioteca biblioteca;
+    private boolean mostrarTodosLibros = true;
+    
+    public BibliotecaFrame() {
+        // cargar/crear la biblioteca
+        biblioteca = GestorJSON.cargarBiblioteca();
+        
+        initComponents();
+        configurarComponentes();
+        cargarDatos();
+        mostrarDatos();
+    }
+    
+    private void initComponents() {
+        // Configurar ventana
+        setTitle("Sistema de Gestión de Biblioteca - Avanzado");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 750);
+        setLocationRelativeTo(null);
+        
+        // ========== CREAR MENÚ ==========
+        menuBar = new JMenuBar();
+        
+        // Menú Archivo
+        menuArchivo = new JMenu("Archivo");
+        menuItemGuardar = new JMenuItem("Guardar Biblioteca");
+        menuItemCargar = new JMenuItem("Cargar Biblioteca");
+        menuItemSalir = new JMenuItem("Salir");
+        
+        menuItemGuardar.addActionListener(e -> guardarBiblioteca());
+        menuItemCargar.addActionListener(e -> cargarBiblioteca());
+        menuItemSalir.addActionListener(e -> salir());
+        
+        menuArchivo.add(menuItemGuardar);
+        menuArchivo.add(menuItemCargar);
+        menuArchivo.addSeparator();
+        menuArchivo.add(menuItemSalir);
+        
+        // Menú Herramientas
+        menuHerramientas = new JMenu("Herramientas");
+        menuItemBackup = new JMenuItem("Crear Backup");
+        menuItemEstadisticas = new JMenuItem("Estadísticas Avanzadas");
+        menuItemReporte = new JMenuItem("Generar Reporte");
+        
+        menuItemBackup.addActionListener(e -> crearBackup());
+        menuItemEstadisticas.addActionListener(e -> mostrarEstadisticasAvanzadas());
+        menuItemReporte.addActionListener(e -> generarReporte());
+        
+        menuHerramientas.add(menuItemBackup);
+        menuHerramientas.add(menuItemEstadisticas);
+        menuHerramientas.add(menuItemReporte);
+        
+        // Menú Ayuda
+        menuAyuda = new JMenu("Ayuda");
+        menuItemAcercaDe = new JMenuItem("Acerca de...");
+        menuItemAcercaDe.addActionListener(e -> mostrarAcercaDe());
+        menuAyuda.add(menuItemAcercaDe);
+        
+        menuBar.add(menuArchivo);
+        menuBar.add(menuHerramientas);
+        menuBar.add(menuAyuda);
+        
+        setJMenuBar(menuBar);
+    }
+    
+    private void configurarComponentes() {
+        tabbedPane = new JTabbedPane();
+        
+        crearPanelInicio();
+        crearPanelLibros();
+        crearPanelAutores();
+        crearPanelPrestamos();
+        crearPanelBusqueda();
+        crearPanelInfo();
+        
+        tabbedPane.addTab("Inicio", panelInicio);
+        tabbedPane.addTab("Libros", panelLibros);
+        tabbedPane.addTab("Autores", panelAutores);
+        tabbedPane.addTab("Préstamos", panelPrestamos);
+        tabbedPane.addTab("Búsqueda", panelBusqueda);
+        tabbedPane.addTab("Info", panelInfo);
+        
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(tabbedPane, BorderLayout.CENTER);
+    }
+    
+    // ================== CREACIÓN DE PANELES ==================
+    
+    private void crearPanelInicio() {
+        panelInicio = new JPanel(new BorderLayout());
+        
+        JLabel lblBienvenida = new JLabel("Bienvenido a " + biblioteca.getNombre(), SwingConstants.CENTER);
+        lblBienvenida.setFont(new Font("SansSerif", Font.BOLD, 24));
+        
+        JTextArea txt = new JTextArea();
+        txt.setEditable(false);
+        txt.setText(
+            "Sistema de Gestión de Biblioteca.\n\n" +
+            "Usa las pestañas para:\n" +
+            " - Ver y gestionar libros\n" +
+            " - Ver autores\n" +
+            " - Ver préstamos\n" +
+            " - Buscar libros\n" +
+            " - Ver información de la biblioteca"
+        );
+        
+        panelInicio.add(lblBienvenida, BorderLayout.NORTH);
+        panelInicio.add(new JScrollPane(txt), BorderLayout.CENTER);
+    }
+    
+    private void crearPanelLibros() {
+        panelLibros = new JPanel(new BorderLayout());
+        
+        modeloTablaLibros = new DefaultTableModel(
+                new Object[]{"Título", "ISBN", "Páginas"}, 0
+        );
+        tablaLibros = new JTable(modeloTablaLibros);
+        
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        btnAgregarLibro = new JButton("Agregar");
+        btnEditarLibro = new JButton("Editar");
+        btnEliminarLibro = new JButton("Eliminar");
+        btnVerLibro = new JButton("Ver");
+        btnExportarLibro = new JButton("Exportar JSON");
+        btnFiltrarDisponibles = new JButton("Solo disponibles");
+        btnFiltrarPrestados = new JButton("Solo prestados");
+        btnMostrarTodos = new JButton("Mostrar todos");
+        
+        panelBotones.add(btnAgregarLibro);
+        panelBotones.add(btnEditarLibro);
+        panelBotones.add(btnEliminarLibro);
+        panelBotones.add(btnVerLibro);
+        panelBotones.add(btnExportarLibro);
+        panelBotones.add(btnFiltrarDisponibles);
+        panelBotones.add(btnFiltrarPrestados);
+        panelBotones.add(btnMostrarTodos);
+        
+        // Filtros (por ahora solo actualizan la tabla)
+        btnFiltrarDisponibles.addActionListener(e -> {
+            mostrarTodosLibros = false;
+            actualizarTablaLibros(true, false);
+        });
+        btnFiltrarPrestados.addActionListener(e -> {
+            mostrarTodosLibros = false;
+            actualizarTablaLibros(false, true);
+        });
+        btnMostrarTodos.addActionListener(e -> {
+            mostrarTodosLibros = true;
+            actualizarTablaLibros(true, true);
+        });
+        
+        panelLibros.add(panelBotones, BorderLayout.NORTH);
+        panelLibros.add(new JScrollPane(tablaLibros), BorderLayout.CENTER);
+    }
+    
+    private void crearPanelAutores() {
+        panelAutores = new JPanel(new BorderLayout());
+        
+        modeloTablaAutores = new DefaultTableModel(
+                new Object[]{"Nombre", "Nacionalidad"}, 0
+        );
+        tablaAutores = new JTable(modeloTablaAutores);
+        
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        btnAgregarAutor = new JButton("Agregar");
+        btnEditarAutor = new JButton("Editar");
+        btnEliminarAutor = new JButton("Eliminar");
+        btnExportarAutor = new JButton("Exportar JSON");
+        
+        panelBotones.add(btnAgregarAutor);
+        panelBotones.add(btnEditarAutor);
+        panelBotones.add(btnEliminarAutor);
+        panelBotones.add(btnExportarAutor);
+        
+        panelAutores.add(panelBotones, BorderLayout.NORTH);
+        panelAutores.add(new JScrollPane(tablaAutores), BorderLayout.CENTER);
+    }
+    
+    private void crearPanelPrestamos() {
+        panelPrestamos = new JPanel(new BorderLayout());
+        
+        modeloTablaPrestamos = new DefaultTableModel(
+                new Object[]{"Estudiante", "Libro", "Fecha préstamo", "Fecha devolución", "Estado"}, 0
+        );
+        tablaPrestamos = new JTable(modeloTablaPrestamos);
+        
+        modeloHistorial = new DefaultTableModel(
+                new Object[]{"Estudiante", "Libro", "Fecha préstamo", "Fecha devolución", "Estado"}, 0
+        );
+        tablaHistorial = new JTable(modeloHistorial);
+        
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        btnNuevoPrestamo = new JButton("Nuevo préstamo");
+        btnDevolverLibro = new JButton("Marcar devuelto");
+        btnExportarPrestamos = new JButton("Exportar JSON");
+        btnVerHistorial = new JButton("Ver historial");
+        
+        panelBotones.add(btnNuevoPrestamo);
+        panelBotones.add(btnDevolverLibro);
+        panelBotones.add(btnExportarPrestamos);
+        panelBotones.add(btnVerHistorial);
+        
+        JSplitPane split = new JSplitPane(
+                JSplitPane.VERTICAL_SPLIT,
+                new JScrollPane(tablaPrestamos),
+                new JScrollPane(tablaHistorial)
+        );
+        split.setDividerLocation(200);
+        
+        panelPrestamos.add(panelBotones, BorderLayout.NORTH);
+        panelPrestamos.add(split, BorderLayout.CENTER);
+    }
+    
+    private void crearPanelBusqueda() {
+        panelBusqueda = new JPanel(new BorderLayout());
+        
+        JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblBuscar = new JLabel("Buscar libro por título: ");
+        txtBusqueda = new JTextField(25);
+        btnBuscarLibros = new JButton("Buscar");
+        
+        panelSuperior.add(lblBuscar);
+        panelSuperior.add(txtBusqueda);
+        panelSuperior.add(btnBuscarLibros);
+        
+        modeloBusqueda = new DefaultTableModel(
+                new Object[]{"Título", "ISBN", "Páginas"}, 0
+        );
+        tablaBusqueda = new JTable(modeloBusqueda);
+        
+        btnBuscarLibros.addActionListener(e -> buscarLibros());
+        
+        panelBusqueda.add(panelSuperior, BorderLayout.NORTH);
+        panelBusqueda.add(new JScrollPane(tablaBusqueda), BorderLayout.CENTER);
+    }
+    
+    private void crearPanelInfo() {
+        panelInfo = new JPanel(new BorderLayout());
+        
+        textAreaInfo = new JTextArea();
+        textAreaInfo.setEditable(false);
+        btnActualizarInfo = new JButton("Actualizar");
+        
+        btnActualizarInfo.addActionListener(e -> actualizarInfo());
+        
+        panelInfo.add(new JScrollPane(textAreaInfo), BorderLayout.CENTER);
+        panelInfo.add(btnActualizarInfo, BorderLayout.SOUTH);
+    }
+    
+    // ================== CARGA Y MOSTRADO DE DATOS ==================
+    
+    private void cargarDatos() {
+        // ya se cargó en el constructor, aquí podrías validar algo extra si quieres
+    }
+    
+    private void mostrarDatos() {
+        actualizarTablaLibros(true, true);
+        actualizarTablaAutores();
+        actualizarTablaPrestamos();
+        actualizarTablaHistorial();
+        actualizarInfo();
+    }
+    
+    private void actualizarTablaLibros(boolean incluirDisponibles, boolean incluirPrestados) {
+        modeloTablaLibros.setRowCount(0);
+        if (biblioteca.getLibros() == null) return;
+        
+        ArrayList<Libro> lista;
+        
+        if (mostrarTodosLibros) {
+            lista = biblioteca.getLibros();
+        } else {
+            lista = new ArrayList<>();
+            if (incluirDisponibles) lista.addAll(biblioteca.getLibrosDisponibles());
+            if (incluirPrestados) {
+                for (Libro l : biblioteca.getLibrosPrestados()) {
+                    if (!lista.contains(l)) lista.add(l);
+                }
+            }
+        }
+        
+        for (Libro libro : lista) {
+            int paginas = (libro.getPaginas() != null) ? libro.getPaginas().size() : 0;
+            modeloTablaLibros.addRow(new Object[]{
+                    libro.getTitulo(),
+                    libro.getIsbn(),
+                    paginas
+            });
+        }
+    }
+    
+    private void actualizarTablaAutores() {
+        modeloTablaAutores.setRowCount(0);
+        if (biblioteca.getAutores() == null) return;
+        
+        for (Autor autor : biblioteca.getAutores()) {
+            modeloTablaAutores.addRow(new Object[]{
+                    autor.getNombre(),
+                    autor.getNacionalidad()
+            });
+        }
+    }
+    
+    private void actualizarTablaPrestamos() {
+        modeloTablaPrestamos.setRowCount(0);
+        if (biblioteca.getPrestamos() == null) return;
+        
+        for (Prestamo p : biblioteca.getPrestamosActivos()) {
+            String estado = p.isDevuelto() ? "DEVUELTO" : "PRESTADO";
+            modeloTablaPrestamos.addRow(new Object[]{
+                    p.getEstudiante().getNombre(),
+                    p.getLibro().getTitulo(),
+                    p.getFechaPrestamo(),
+                    p.getFechaDevolucion(),
+                    estado
+            });
+        }
+    }
+    
+    private void actualizarTablaHistorial() {
+        modeloHistorial.setRowCount(0);
+        if (biblioteca.getHistorialPrestamosList() == null) return;
+        
+        for (Prestamo p : biblioteca.getHistorialPrestamosList()) {
+            String estado = p.isDevuelto() ? "DEVUELTO" : "PRESTADO";
+            modeloHistorial.addRow(new Object[]{
+                    p.getEstudiante().getNombre(),
+                    p.getLibro().getTitulo(),
+                    p.getFechaPrestamo(),
+                    p.getFechaDevolucion(),
+                    estado
+            });
+        }
+    }
+    
+    private void buscarLibros() {
+        String texto = txtBusqueda.getText().trim();
+        modeloBusqueda.setRowCount(0);
+        if (texto.isEmpty()) return;
+        
+        ArrayList<Libro> resultados = biblioteca.buscarLibrosPorTitulo(texto);
+        for (Libro libro : resultados) {
+            int paginas = (libro.getPaginas() != null) ? libro.getPaginas().size() : 0;
+            modeloBusqueda.addRow(new Object[]{
+                    libro.getTitulo(),
+                    libro.getIsbn(),
+                    paginas
+            });
+        }
+    }
+    
+    private void actualizarInfo() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Nombre: ").append(biblioteca.getNombre()).append("\n");
+        if (biblioteca.getHorario() != null) {
+            sb.append("Horario: ").append(biblioteca.getHorario().toString()).append("\n");
+        }
+        sb.append("\nResumen:\n");
+        sb.append("Libros: ").append(
+                biblioteca.getLibros() != null ? biblioteca.getLibros().size() : 0
+        ).append("\n");
+        sb.append("Autores: ").append(
+                biblioteca.getAutores() != null ? biblioteca.getAutores().size() : 0
+        ).append("\n");
+        sb.append("Préstamos registrados: ").append(
+                biblioteca.getHistorialPrestamosList() != null ? biblioteca.getHistorialPrestamosList().size() : 0
+        ).append("\n");
+        
+        textAreaInfo.setText(sb.toString());
+    }
+    
+    // ================== ACCIONES DE MENÚ ==================
+    
+    private void guardarBiblioteca() {
+        GestorJSON.guardarBiblioteca(biblioteca);
+        JOptionPane.showMessageDialog(this, "Biblioteca guardada en JSON.");
+    }
+    
+    private void cargarBiblioteca() {
+        biblioteca = GestorJSON.cargarBiblioteca();
+        mostrarDatos();
+        JOptionPane.showMessageDialog(this, "Biblioteca recargada.");
+    }
+    
+    private void crearBackup() {
+        GestorJSON.crearBackupAutomatico(biblioteca);
+        JOptionPane.showMessageDialog(this, "Backup creado en carpeta 'backups/'.");
+    }
+    
+    private void mostrarEstadisticasAvanzadas() {
+        int numLibros = biblioteca.getLibros() != null ? biblioteca.getLibros().size() : 0;
+        int numAutores = biblioteca.getAutores() != null ? biblioteca.getAutores().size() : 0;
+        int numPrestamos = biblioteca.getHistorialPrestamosList() != null ? biblioteca.getHistorialPrestamosList().size() : 0;
+        
+        String msg = "Estadísticas de la biblioteca:\n\n"
+                + "Libros: " + numLibros + "\n"
+                + "Autores: " + numAutores + "\n"
+                + "Préstamos registrados: " + numPrestamos;
+        
+        JOptionPane.showMessageDialog(this, msg);
+    }
+    
+    private void generarReporte() {
+        JOptionPane.showMessageDialog(this,
+                "Función de reporte en desarrollo.\nAquí podrías generar un informe o PDF.",
+                "Reporte",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    private void mostrarAcercaDe() {
+        JOptionPane.showMessageDialog(this,
+                "Sistema de Gestión de Biblioteca\nDesarrollado como práctica con NetBeans.",
+                "Acerca de",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    private void salir() {
+        dispose();
+    }
+}
+
+
+
+
+package biblioteca;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Type;
+
+public class GestorJSON {
+    private static final String ARCHIVO_BIBLIOTECA = "biblioteca.json";
+    private static final Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .serializeNulls()
+            .create();
+
+    public static void guardarBiblioteca(Biblioteca biblioteca) {
+        try (FileWriter writer = new FileWriter(ARCHIVO_BIBLIOTECA)) {
+            gson.toJson(biblioteca, writer);
+            System.out.println("✅ Biblioteca guardada en: " + ARCHIVO_BIBLIOTECA);
+        } catch (IOException e) {
+            System.out.println("❌ Error al guardar: " + e.getMessage());
+        }
+    }
+
+    public static Biblioteca cargarBiblioteca() {
+        File archivo = new File(ARCHIVO_BIBLIOTECA);
+        if (!archivo.exists()) {
+            System.out.println("📝 No existe archivo, creando nueva biblioteca...");
+            return new Biblioteca("Biblioteca Central", "L-V", "08:00", "20:00");
+        }
+        
+        try (Reader reader = new FileReader(ARCHIVO_BIBLIOTECA)) {
+            Type tipoBiblioteca = new TypeToken<Biblioteca>(){}.getType();
+            Biblioteca biblioteca = gson.fromJson(reader, tipoBiblioteca);
+            System.out.println("✅ Biblioteca cargada desde: " + ARCHIVO_BIBLIOTECA);
+            return biblioteca;
+        } catch (IOException e) {
+            System.out.println("❌ Error al cargar: " + e.getMessage());
+            return new Biblioteca("Biblioteca Central", "L-V", "08:00", "20:00");
+        }
+    }
+
+    public static void exportarObjeto(Object objeto, String nombreArchivo) {
+        try (FileWriter writer = new FileWriter(nombreArchivo)) {
+            gson.toJson(objeto, writer);
+            System.out.println("Objeto exportado a: " + nombreArchivo);
+        } catch (IOException e) {
+            System.out.println(" Error al exportar: " + e.getMessage());
+        }
+    }
+    
+    public static void crearBackupAutomatico(Biblioteca biblioteca) {
+        String backupDir = "backups/";
+        File directorio = new File(backupDir);
+        if (!directorio.exists()) {
+            directorio.mkdir();
+        }
+        
+        String nombreBackup = backupDir + "backup_auto_" + 
+                System.currentTimeMillis() + ".json";
+        exportarObjeto(biblioteca, nombreBackup);
+    }
+}
+
+
+
+
+
+
+
+
